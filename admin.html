@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Panel del profe · Resortera Vectorial</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    body { background: #f3f6fa; }
+    .wrap { max-width: 1400px; margin: 0 auto; padding: 18px; display: flex; flex-direction: column; gap: 16px; }
+    .filtros { display: flex; flex-wrap: wrap; gap: 12px; align-items: end; }
+    .filtros .campo { margin: 0; min-width: 160px; }
+    .filtros select, .filtros input { padding: 10px 12px; border: 2px solid var(--borde); border-radius: 12px; font-size: 15px; background: #fff; font-weight: 700; }
+    .kpis { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; }
+    .kpi { background: #fff; border: 1px solid var(--borde); border-radius: var(--radio); padding: 14px 16px; }
+    .kpi .l { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; color: var(--tinta-suave); }
+    .kpi .n { font-family: 'Baloo 2'; font-size: 34px; font-weight: 800; line-height: 1.1; margin-top: 4px; font-variant-numeric: tabular-nums; }
+    .grid2 { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+    .tabla tr:hover td { background: #fafcff; }
+    .medalla { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; font-weight: 900; font-size: 13px; background: #eef2f6; }
+    .m1 { background: #ffd54a; } .m2 { background: #d5dbe2; } .m3 { background: #e6b183; }
+    .barra-n { display: grid; grid-template-columns: 170px 1fr 60px; gap: 10px; align-items: center; font-size: 14px; margin: 8px 0; }
+    .barra-n .track { height: 14px; background: #eef2f6; border-radius: 7px; overflow: hidden; }
+    .barra-n .fill { height: 100%; border-radius: 7px; background: var(--verde); }
+    .barra-n .sub { grid-column: 2 / 4; font-size: 12px; color: var(--tinta-suave); margin-top: -6px; }
+    .feed { font-size: 14px; max-height: 420px; overflow: auto; }
+    .feed div { padding: 7px 0; border-bottom: 1px solid var(--borde); display: flex; gap: 8px; }
+    .feed .hora { color: var(--tinta-suave); font-variant-numeric: tabular-nums; min-width: 64px; }
+    .estado { font-size: 13px; color: var(--tinta-suave); font-weight: 700; }
+    .vacio { color: var(--tinta-suave); padding: 24px; text-align: center; }
+    /* proyector */
+    #proyector { position: fixed; inset: 0; background: linear-gradient(180deg, #1d2a3a, #2b3f5a); color: #fff; z-index: 50; display: none; padding: 32px 48px; overflow: auto; }
+    #proyector.on { display: block; }
+    #proyector h1 { font-size: 48px; text-align: center; }
+    #proyector .sub { text-align: center; opacity: .7; font-weight: 700; font-size: 18px; }
+    .podio { display: flex; justify-content: center; align-items: flex-end; gap: 24px; margin: 36px 0 28px; }
+    .podio .col { text-align: center; width: 260px; }
+    .podio .nom { font-family: 'Baloo 2'; font-size: 28px; font-weight: 800; line-height: 1.1; word-break: break-word; }
+    .podio .pts { font-size: 22px; font-weight: 800; opacity: .85; margin: 4px 0 10px; }
+    .podio .bloque { border-radius: 14px 14px 0 0; display: grid; place-items: center; font-family: 'Baloo 2'; font-size: 56px; font-weight: 800; color: #1d2a3a; }
+    .lista-proy { max-width: 900px; margin: 0 auto; font-size: 22px; }
+    .lista-proy div { display: grid; grid-template-columns: 60px 1fr auto; padding: 8px 14px; border-bottom: 1px solid rgba(255,255,255,.12); }
+    .cerrar-proy { position: fixed; top: 16px; right: 20px; z-index: 51; }
+    @media (max-width: 1000px) { .kpis { grid-template-columns: repeat(2, 1fr); } .grid2 { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <header class="barra">
+    <div class="logo">
+      <svg viewBox="0 0 40 40" aria-hidden="true"><path d="M20 38V22M20 22L9 6M20 22L31 6" stroke="#8a5a2b" stroke-width="5" stroke-linecap="round" fill="none"/><path d="M9 6Q20 20 31 6" stroke="#1d2a3a" stroke-width="2" fill="none"/><circle cx="20" cy="15" r="5" fill="#ff7a1a"/></svg>
+      Panel del profe
+    </div>
+    <div class="espacio"></div>
+    <span class="pill modo-local" id="pModo" hidden>Modo local: solo ves las partidas de este navegador</span>
+    <span class="estado" id="estado"></span>
+  </header>
+
+  <!-- PIN -->
+  <section class="pantalla activa" id="sPin">
+    <div class="centro" style="max-width:420px">
+      <form class="tarjeta" id="formPin">
+        <h2 style="font-size:28px">Acceso de admin</h2>
+        <div class="campo"><label for="inPin">PIN</label><input id="inPin" type="password" inputmode="numeric" required /></div>
+        <div class="error" id="errPin"></div>
+        <button class="btn ancho" type="submit">Entrar</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- PANEL -->
+  <section class="pantalla" id="sPanel">
+    <div class="wrap">
+      <div class="tarjeta filtros">
+        <div class="campo"><label for="fFecha">Fecha</label><input type="date" id="fFecha" /></div>
+        <div class="campo"><label for="fSala">Sala</label><select id="fSala"><option value="">Todas</option></select></div>
+        <div class="campo"><label for="fModo">Puntaje que cuenta</label>
+          <select id="fModo"><option value="mejor">Mejor partida de cada jugador</option><option value="primera">Solo la primera partida</option></select></div>
+        <div class="campo"><label for="fBuscar">Buscar jugador</label><input id="fBuscar" placeholder="Nombre…" /></div>
+        <div class="campo"><label for="fAuto">Actualizar</label><select id="fAuto"><option value="5">Cada 5 s</option><option value="15">Cada 15 s</option><option value="0">Manual</option></select></div>
+        <div class="espacio" style="flex:1"></div>
+        <button class="btn sec" id="btnRefrescar" type="button">Actualizar</button>
+        <button class="btn sec" id="btnCSV" type="button">Exportar CSV</button>
+        <button class="btn" id="btnProy" type="button">Modo proyector</button>
+      </div>
+
+      <div class="tarjeta" id="linkJuego" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+        <b>Link para los estudiantes:</b>
+        <code id="urlJuego" style="background:#f3f6fa;padding:6px 10px;border-radius:8px;word-break:break-all"></code>
+        <button class="btn sec" id="btnCopiar" type="button" style="padding:8px 14px;font-size:14px">Copiar</button>
+      </div>
+
+      <div class="kpis">
+        <div class="kpi"><div class="l">Jugadores</div><div class="n" id="kJug">0</div></div>
+        <div class="kpi"><div class="l">Partidas</div><div class="n" id="kPar">0</div></div>
+        <div class="kpi"><div class="l">Partidas completas</div><div class="n" id="kComp">0</div></div>
+        <div class="kpi"><div class="l">% de dianas</div><div class="n" id="kAci">0%</div></div>
+        <div class="kpi"><div class="l">Puntaje promedio</div><div class="n" id="kProm">0</div></div>
+      </div>
+
+      <div class="grid2">
+        <div class="tarjeta">
+          <p class="seccion-t">Ranking</p>
+          <div style="overflow-x:auto"><table class="tabla" id="tRanking"></table></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <div class="tarjeta">
+            <p class="seccion-t">¿Qué nivel les cuesta más? (% de dianas)</p>
+            <div id="porNivel"></div>
+          </div>
+          <div class="tarjeta">
+            <p class="seccion-t">Actividad en vivo</p>
+            <div class="feed" id="feed"></div>
+          </div>
+        </div>
+      </div>
+      <div id="zonaLocal" hidden><button class="btn sec" id="btnBorrar" type="button">Borrar datos locales de prueba</button></div>
+    </div>
+  </section>
+
+  <div id="proyector">
+    <button class="btn sec cerrar-proy" id="btnCerrarProy" type="button">Cerrar</button>
+    <h1>🏆 Ranking en vivo</h1>
+    <div class="sub" id="proySub"></div>
+    <div class="podio" id="podio"></div>
+    <div class="lista-proy" id="listaProy"></div>
+  </div>
+
+  <script src="vendor/supabase.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

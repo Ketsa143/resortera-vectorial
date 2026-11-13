@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Resortera Vectorial · Cálculo Vectorial</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="vendor/katex/katex.min.css" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <header class="barra">
+    <div class="logo">
+      <svg viewBox="0 0 40 40" aria-hidden="true"><path d="M20 38V22M20 22L9 6M20 22L31 6" stroke="#8a5a2b" stroke-width="5" stroke-linecap="round" fill="none"/><path d="M9 6Q20 20 31 6" stroke="#1d2a3a" stroke-width="2" fill="none"/><circle cx="20" cy="15" r="5" fill="#ff7a1a"/></svg>
+      Resortera Vectorial
+    </div>
+    <div class="espacio"></div>
+    <span class="pill" id="pJugador" hidden></span>
+    <span class="pill" id="pNivel" hidden></span>
+    <span class="pill" id="pPuntos" hidden>Puntos: <b id="puntosTotal">0</b></span>
+    <span class="pill modo-local" id="pModo" hidden>Modo local (sin nube)</span>
+  </header>
+
+  <!-- INICIO -->
+  <section class="pantalla activa" id="sInicio">
+    <div class="centro">
+      <div class="tarjeta hero">
+        <h1>Resortera Vectorial</h1>
+        <p>Diez niveles para darle a la diana resolviendo la ecuación de la trayectoria. Tú pones los datos y el juego simula la parábola exacta que resulta de lo que calculaste.</p>
+        <form id="formInicio" autocomplete="off">
+          <div class="campo">
+            <label for="inNombre">Tu nombre (como quieres salir en el ranking)</label>
+            <input id="inNombre" maxlength="40" required placeholder="Ej: Laura Gómez" />
+          </div>
+          <div class="campo">
+            <label for="inSala">Código de la sala</label>
+            <input id="inSala" maxlength="30" required placeholder="Lo da el profe" />
+          </div>
+          <div class="error" id="errInicio"></div>
+          <button class="btn ancho" type="submit">¡A jugar!</button>
+        </form>
+        <ul class="reglas">
+          <li>Tienes <b>3 tiros por nivel</b>. Acertar al primero da más puntos.</li>
+          <li>Ganas bonos por <b>precisión</b> (pegarle al centro) y por <b>rapidez</b>.</li>
+          <li>Los valores cambian al azar en cada partida: calcula, no copies.</li>
+          <li>Usa calculadora en grados para los ángulos y g = 9,8 m/s² salvo que el nivel diga otra cosa.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- JUEGO -->
+  <section class="pantalla" id="sJuego">
+    <div class="juego">
+      <div class="tarjeta lienzo">
+        <canvas id="cv" width="1200" height="700" aria-label="Escena del lanzamiento"></canvas>
+        <div class="leyenda">
+          <span><i style="background:#ff7a1a"></i>trayectoria r(t)</span>
+          <span><i style="background:#2b6fd6"></i>velocidad r′(t)</span>
+          <span><i style="background:#e04848"></i>aceleración r″(t)</span>
+          <span><i style="background:#9aa5b1"></i>tiros anteriores</span>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="tarjeta">
+          <span class="chip" id="lvTema"></span>
+          <h2 id="lvTitulo"></h2>
+        </div>
+        <div class="tarjeta">
+          <p class="seccion-t">Lo que ves</p>
+          <div class="datos" id="lvDatos"></div>
+        </div>
+        <div class="tarjeta">
+          <p class="seccion-t">La idea</p>
+          <p class="idea" id="lvIdea"></p>
+          <div class="formulas" id="lvFormulas" style="margin-top:12px"></div>
+        </div>
+        <div class="tarjeta">
+          <p class="seccion-t">Tu respuesta</p>
+          <form id="formTiro" autocomplete="off">
+            <div class="entradas" id="lvEntradas"></div>
+            <div class="acciones" style="margin-top:14px">
+              <button class="btn" id="btnLanzar" type="submit">Lanzar</button>
+              <div class="intentos" id="lvIntentos"></div>
+            </div>
+          </form>
+          <div class="feedback" id="lvFeedback" style="margin-top:12px"></div>
+          <button class="btn verde ancho" id="btnSiguiente" type="button" style="margin-top:12px" hidden>Siguiente nivel</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FINAL -->
+  <section class="pantalla" id="sFinal">
+    <div class="centro" style="max-width:760px">
+      <div class="tarjeta final">
+        <h1>¡Partida terminada!</h1>
+        <p id="finNombre" style="color:var(--tinta-suave);font-weight:700"></p>
+        <div class="total-grande" id="finTotal">0</div>
+        <table class="tabla" id="finTabla"></table>
+        <div class="estado-guardado" id="finEstado"></div>
+        <div class="acciones" style="margin-top:18px">
+          <button class="btn" id="btnOtra" type="button">Jugar otra vez</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script src="vendor/katex/katex.min.js"></script>
+  <script src="vendor/supabase.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/levels.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>
